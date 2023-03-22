@@ -1,4 +1,5 @@
 from telegram import CallbackQuery, Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.constants import ParseMode
 from telegram.ext import CallbackQueryHandler
 from telegram.error import BadRequest
 
@@ -8,10 +9,7 @@ class AbstractAction:
         self.bot = bot
         self.action_key = action_key
 
-    def register(self):
-        self.bot.register_action(self)
-
-    async def handle(self, update: Update, ctx):
+    async def handle(self, args: list, update: Update, ctx):
         print(f"Execution code for action '{self.action_key}' isn't implemented!")
 
 
@@ -43,9 +41,10 @@ class CallbackHandler(CallbackQueryHandler):
 
             if action is None:
                 print(f"[Callback] Invoked unknown action '{command}'!")
+                await self.bot.get().send_message(query.message.chat_id, '😡 Не тыкайся...')
             else:
                 try:
-                    await action.handle(update, ctx)
+                    await action.handle(args, update, ctx)
                 except BadRequest:
                     print(f"[Callback] Handle error: BadRequest")
 
@@ -53,22 +52,16 @@ class CallbackHandler(CallbackQueryHandler):
 class ActionShowCities(AbstractAction):
     def __init__(self, bot):
         super().__init__(bot, 'show_cities')
+
+        buttons = [model.as_inline_button() for model in bot.city_models.values()]
+
         self.keyboard = InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton('г. Пермь', callback_data="#select_city perm"),
-                InlineKeyboardButton('г. Москва', callback_data="#select_city moscow")
-            ],
-            [
-                InlineKeyboardButton('с. Бырма', callback_data="#select_city birma"),
-                InlineKeyboardButton('г. Кунгур', callback_data="#select_city kungur")
-            ],
-            [
-                InlineKeyboardButton('г. Соликамск', callback_data="#select_city solikamsk"),
-                InlineKeyboardButton('г. Париж', callback_data="#select_city paris")
-            ]
+            [buttons[0], buttons[1]],
+            [buttons[2], buttons[3]],
+            [buttons[4], buttons[5]]
         ])
 
-    async def handle(self, update: Update, ctx):
+    async def handle(self, args: list, update: Update, ctx):
         query = update.callback_query
         await self.show_cities(query.message.message_id, query.message.chat_id, query.inline_message_id)
 
@@ -76,13 +69,53 @@ class ActionShowCities(AbstractAction):
         if message_id is None and inline_message_id is None:
             await self.bot.get().send_message(
                 chat_id,
-                '🏙 Выберите город из списка:',
+                '🏘 Выберите город из списка:',
                 reply_markup=self.keyboard
             )
         else:
             await self.bot.get().edit_message_text(
-                '🏙 Выберите город из списка:',
+                '🏘 Выберите город из списка:',
                 message_id=message_id,
                 chat_id=chat_id,
                 reply_markup=self.keyboard
             )
+
+
+class ActionSelectCity(AbstractAction):
+    def __init__(self, bot):
+        super().__init__(bot, 'select_city')
+
+    async def handle(self, args: list, update: Update, ctx):
+        if len(args) < 1:
+            print(f'[Callback] Failed: there are no city_id argument received!')
+            return
+
+        city_id = args[0]
+        city = self.bot.get_city_model(city_id)
+
+        holder = self.bot.get_user_holder(update.effective_user.id)
+        holder.update_selected_city(city_id)
+
+        await self.bot.get().send_message(
+            update.callback_query.message.chat_id,
+            f"""
+*Выберите действие с городом*
+            
+{city.emoji} Город: `{city.name}`
+🌍 Страна: `{city.country}`
+""",
+            parse_mode=ParseMode.MARKDOWN_V2,
+            reply_markup=ActionSelectCity.construct_keyboard(city_id)
+        )
+
+    @staticmethod
+    def construct_keyboard(city_id: str) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton('📚 Открыть справочник', callback_data=f'#show_city_info {city_id}')
+            ],
+            [
+                InlineKeyboardButton('📷 Фото', callback_data=f'#show_photos {city_id}'),
+                InlineKeyboardButton('🌤 Погода', callback_data=f'#show_weather {city_id}')
+            ]
+        ])

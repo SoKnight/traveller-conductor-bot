@@ -45,4 +45,4 @@ class CommandHelp(AbstractCommand):
         super().__init__(bot, 'help')
 
     async def execute(self, update: Update, ctx):
-        await self.bot.registered_actions['show_cities'].handle(update, ctx)
+        await self.bot.registered_actions['show_cities'].show_cities(None, update.message.chat_id, None)
