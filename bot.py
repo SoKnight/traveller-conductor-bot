@@ -1,8 +1,7 @@
-from commands import start
-from commands import bye
-from commands import help
+from actions import *
+from commands import *
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ExtBot, filters
+from telegram.ext import Application, ApplicationBuilder, CallbackQueryHandler, CommandHandler, MessageHandler, ExtBot, filters
 import yaml
 
 
@@ -16,32 +15,71 @@ class Preferences:
         return yaml.load(file, yaml.Loader)
 
 
-def get_bot() -> ExtBot:
-    return app.bot
+class Bot:
+    def __init__(self):
+        self.prefs = None
+        self.token = None
+        self.app = None
 
+        self.registered_commands = dict()
+        self.register_command(CommandStart(self))
+        self.register_command(CommandBye(self))
+        self.register_command(CommandHelp(self))
 
-async def debug_stickers(update: Update, ctx):
-    print(f"Received sticker message from @{update.effective_user.username}: {update.message.sticker}")
+        self.registered_actions = dict()
+        self.register_action(ActionShowCities(self))
 
+    def app(self) -> Application:
+        return self.app
 
-print("""
+    def get(self) -> ExtBot:
+        return self.app.bot
+
+    def load(self):
+        print("""
 -------------------------
  Traveller Conductor Bot
     written by @soknight
 -------------------------
-""")
+        """)
 
-print('Loading preferences...')
-prefs = Preferences.load()
-token = prefs.telegram_bot_token
+        print('Loading preferences...')
+        self.prefs = Preferences.load()
+        self.token = self.prefs.telegram_bot_token
 
-print('Initializing application...')
-app = ApplicationBuilder().token(token).build()
-app.add_handler(CommandHandler("start", start.execute))
-app.add_handler(CommandHandler("bye", bye.execute))
-app.add_handler(CommandHandler("help", help.execute))
-# app.add_handler(MessageHandler(filters.Sticker.ALL, debug_stickers))
+        print('Initializing application...')
+        self.app = ApplicationBuilder().token(self.token).build()
 
-print('Running LongPoll...')
-print()
-app.run_polling()
+        print('Registering handlers...')
+        self.register_handlers()
+
+    def register_handlers(self):
+        # command handlers
+        for command in self.registered_commands.values():
+            command.register()
+
+        # callback handler
+        CallbackHandler(self).register()
+
+        # debugging
+        self.app.add_handler(MessageHandler(filters.Sticker.ALL, Bot.show_received_sticker))
+
+    def register_command(self, command: AbstractCommand):
+        self.registered_commands[command.command] = command
+
+    def register_action(self, action: AbstractAction):
+        self.registered_actions[action.action_key] = action
+
+    def start(self):
+        print('Running LongPoll...')
+        CallbackHandler(self).register()
+        self.app.run_polling()
+
+    @staticmethod
+    async def show_received_sticker(update: Update, ctx):
+        print(f"Received sticker message from @{update.effective_user.username}: {update.message.sticker}")
+
+
+bot = Bot()
+bot.load()
+bot.start()
