@@ -1,3 +1,4 @@
+from data import *
 from telegram import CallbackQuery, Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.constants import ParseMode
 from telegram.ext import CallbackQueryHandler
@@ -11,6 +12,9 @@ class AbstractAction:
 
     async def handle(self, args: list, update: Update, ctx):
         print(f"Execution code for action '{self.action_key}' isn't implemented!")
+
+    def get_city(self, city_id: str) -> CityModel:
+        return self.bot.data_loader.get_city_model(city_id)
 
 
 class CallbackHandler(CallbackQueryHandler):
@@ -53,7 +57,7 @@ class ActionShowCities(AbstractAction):
     def __init__(self, bot):
         super().__init__(bot, 'show_cities')
 
-        buttons = [model.as_inline_button() for model in bot.city_models.values()]
+        buttons = [model.as_inline_button() for model in bot.data_loader.city_models.values()]
 
         self.keyboard = InlineKeyboardMarkup([
             [buttons[0], buttons[1]],
@@ -90,22 +94,18 @@ class ActionSelectCity(AbstractAction):
             print(f'[Callback] Failed: there are no city_id argument received!')
             return
 
-        city_id = args[0]
-        city = self.bot.get_city_model(city_id)
+        city = self.get_city(args[0])
+        query: CallbackQuery = update.callback_query
 
-        holder = self.bot.get_user_holder(update.effective_user.id)
-        holder.update_selected_city(city_id)
-
-        await self.bot.get().send_message(
-            update.callback_query.message.chat_id,
+        await query.edit_message_text(
             f"""
 *Выберите действие с городом*
             
 {city.emoji} Город: `{city.name}`
 🌍 Страна: `{city.country}`
-""",
+            """,
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=ActionSelectCity.construct_keyboard(city_id)
+            reply_markup=ActionSelectCity.construct_keyboard(args[0])
         )
 
     @staticmethod
@@ -117,5 +117,43 @@ class ActionSelectCity(AbstractAction):
             [
                 InlineKeyboardButton('📷 Фото', callback_data=f'#show_photos {city_id}'),
                 InlineKeyboardButton('🌤 Погода', callback_data=f'#show_weather {city_id}')
+            ],
+            [
+                InlineKeyboardButton('🏘 Выбрать другой город', callback_data=f'#show_cities')
+            ]
+        ])
+
+
+class ActionShowCityInfo(AbstractAction):
+    def __init__(self, bot):
+        super().__init__(bot, 'show_city_info')
+
+    async def handle(self, args: list, update: Update, ctx):
+        if len(args) < 1:
+            print(f'[Callback] Failed: there are no city_id argument received!')
+            return
+
+        city = self.get_city(args[0])
+        query: CallbackQuery = update.callback_query
+
+        await query.edit_message_text(
+            f"""
+*Справка о городе {city.name} {city.emoji}*
+
+○ Страна: `{city.country}`
+○ Широта: `{city.latitude}`
+○ Долгота: `{city.longitude}`
+○ Площадь: `{city.area} км²`
+○ Население: `{city.population}`
+            """,
+            parse_mode=ParseMode.MARKDOWN_V2,
+            reply_markup=ActionShowCityInfo.construct_keyboard(args[0])
+        )
+
+    @staticmethod
+    def construct_keyboard(city_id: str) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton('🎲 Вернуться к выбору действия', callback_data=f'#select_city {city_id}')
             ]
         ])

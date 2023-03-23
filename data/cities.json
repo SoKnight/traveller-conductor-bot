@@ -1,0 +1,56 @@
+{
+  "perm": {
+    "name": "Пермь",
+    "country": "Россия",
+    "emoji": "\uD83D\uDC3B",
+    "latitude": "58,0105° с. ш.",
+    "longitude": "56,2502° в. д.",
+    "area": 803,
+    "population": "1 млн."
+  },
+  "moscow": {
+    "name": "Москва",
+    "country": "Россия",
+    "emoji": "\uD83C\uDDF7\uD83C\uDDFA",
+    "latitude": "55,7522° с. ш.",
+    "longitude": "37,6156° в. д.",
+    "area": 2511,
+    "population": "12 млн."
+  },
+  "kungur": {
+    "name": "Кунгур",
+    "country": "Россия",
+    "emoji": "\uD83E\uDDCA",
+    "latitude": "57,4368° с. ш.",
+    "longitude": "56,9593° в. д.",
+    "area": 68.7,
+    "population": "64,3 тыс."
+  },
+  "birma": {
+    "name": "Бырма",
+    "country": "Россия",
+    "emoji": "\uD83C\uDFE0",
+    "latitude": "57.2446° с. ш.",
+    "longitude": "56.2996° в. д.",
+    "area": 2.2,
+    "population": "700 чел."
+  },
+  "london": {
+    "name": "Лондон",
+    "country": "Великобритания",
+    "emoji": "\uD83D\uDD2A",
+    "latitude": "51,5085° с. ш.",
+    "longitude": "0,12574° з. д.",
+    "area": 1572,
+    "population": "9 млн."
+  },
+  "paris": {
+    "name": "Париж",
+    "country": "Франция",
+    "emoji": "\uD83E\uDD56",
+    "latitude": "48,8534° с. ш.",
+    "longitude": "2,3488° в. д.",
+    "area": 105,
+    "population": "2,2 млн."
+  }
+}
