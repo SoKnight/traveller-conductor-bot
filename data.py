@@ -25,7 +25,7 @@ class DataLoader:
         self.parse_city_models()
 
     def parse_city_models(self):
-        file = open('data/cities.json', 'r')
+        file = open('data/cities.json', 'r', encoding='UTF-8')
         raw_json = '\n'.join(file.readlines())
         file.close()
 
