@@ -10,6 +10,8 @@ class CityModel:
         self.emoji = data['emoji']
         self.latitude = data['latitude']
         self.longitude = data['longitude']
+        self.raw_lat = data['lat']
+        self.raw_lon = data['lon']
         self.area = data['area']
         self.population = data['population']
 

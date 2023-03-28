@@ -5,6 +5,8 @@
     "emoji": "\uD83D\uDC3B",
     "latitude": "58,0105° с. ш.",
     "longitude": "56,2502° в. д.",
+    "lat": 58.0105,
+    "lon": 56.2502,
     "area": 803,
     "population": "1 млн."
   },
@@ -14,6 +16,8 @@
     "emoji": "\uD83C\uDDF7\uD83C\uDDFA",
     "latitude": "55,7522° с. ш.",
     "longitude": "37,6156° в. д.",
+    "lat": 55.7522,
+    "lon": 37.6156,
     "area": 2511,
     "population": "12 млн."
   },
@@ -23,6 +27,8 @@
     "emoji": "\uD83E\uDDCA",
     "latitude": "57,4368° с. ш.",
     "longitude": "56,9593° в. д.",
+    "lat": 57.4368,
+    "lon": 56.9593,
     "area": 68.7,
     "population": "64,3 тыс."
   },
@@ -32,6 +38,8 @@
     "emoji": "\uD83C\uDFE0",
     "latitude": "57.2446° с. ш.",
     "longitude": "56.2996° в. д.",
+    "lat": 57.2446,
+    "lon": 56.2996,
     "area": 2.2,
     "population": "700 чел."
   },
@@ -41,6 +49,8 @@
     "emoji": "\uD83D\uDD2A",
     "latitude": "51,5085° с. ш.",
     "longitude": "0,12574° з. д.",
+    "lat": 51.5085,
+    "lon": -0.12574,
     "area": 1572,
     "population": "9 млн."
   },
@@ -50,6 +60,8 @@
     "emoji": "\uD83E\uDD56",
     "latitude": "48,8534° с. ш.",
     "longitude": "2,3488° в. д.",
+    "lat": 48.8534,
+    "lon": 2.3488,
     "area": 105,
     "population": "2,2 млн."
   }

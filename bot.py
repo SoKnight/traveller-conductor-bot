@@ -1,13 +1,15 @@
 from actions import *
 from commands import *
 from data import *
+from weather import WeatherFetchThread
 from telegram.ext import Application, ApplicationBuilder, ExtBot
 import yaml
 
 
 class Preferences:
-    def __init__(self, telegram_bot_token):
-        self.telegram_bot_token = telegram_bot_token
+    def __init__(self, telegram_bot_token: str, weather_api_key: str):
+        self.telegram_bot_token: str = telegram_bot_token
+        self.weather_api_key: str = weather_api_key
 
     @staticmethod
     def load():
@@ -18,9 +20,11 @@ class Preferences:
 class Bot:
     def __init__(self):
         self.prefs = None
-        self.token = None
+        self.telegram_token = None
+        self.weather_api_key = None
         self.app = None
         self.data_loader = None
+        self.weather_thread = None
 
         self.registered_commands = dict()
         self.registered_actions = dict()
@@ -33,15 +37,16 @@ class Bot:
 
     def load(self):
         print('Loading preferences...')
-        self.prefs = Preferences.load()
-        self.token = self.prefs.telegram_bot_token
+        self.prefs: Preferences = Preferences.load()
+        self.telegram_token = self.prefs.telegram_bot_token
+        self.weather_api_key = self.prefs.weather_api_key
 
         print('Loading data...')
-        self.data_loader = DataLoader()
+        self.data_loader: DataLoader = DataLoader()
         self.data_loader.load()
 
         print('Initializing application...')
-        self.app = ApplicationBuilder().token(self.token).build()
+        self.app = ApplicationBuilder().token(self.telegram_token).build()
 
         print('Registering commands...')
         self.register_command(CommandStart(self))
@@ -55,6 +60,10 @@ class Bot:
 
         print('Registering handlers...')
         self.register_handlers()
+
+        print('Running Weather Service thread...')
+        self.weather_thread: WeatherFetchThread = WeatherFetchThread(self)
+        self.weather_thread.start()
 
     def register_handlers(self):
         # command handlers
