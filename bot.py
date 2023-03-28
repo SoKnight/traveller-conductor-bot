@@ -1,7 +1,7 @@
 from actions import *
 from commands import *
 from data import *
-from weather import WeatherFetchThread
+from weather import WeatherService
 from telegram.ext import Application, ApplicationBuilder, ExtBot
 import yaml
 
@@ -24,7 +24,7 @@ class Bot:
         self.weather_api_key = None
         self.app = None
         self.data_loader = None
-        self.weather_thread = None
+        self.weather_service = None
 
         self.registered_commands = dict()
         self.registered_actions = dict()
@@ -45,6 +45,10 @@ class Bot:
         self.data_loader: DataLoader = DataLoader()
         self.data_loader.load()
 
+        print('Initializing Weather Service...')
+        self.weather_service: WeatherService = WeatherService(self)
+        self.weather_service.start()
+
         print('Initializing application...')
         self.app = ApplicationBuilder().token(self.telegram_token).build()
 
@@ -57,13 +61,10 @@ class Bot:
         self.register_action(ActionShowCities(self))
         self.register_action(ActionSelectCity(self))
         self.register_action(ActionShowCityInfo(self))
+        self.register_action(ActionShowWeather(self))
 
         print('Registering handlers...')
         self.register_handlers()
-
-        print('Running Weather Service thread...')
-        self.weather_thread: WeatherFetchThread = WeatherFetchThread(self)
-        self.weather_thread.start()
 
     def register_handlers(self):
         # command handlers

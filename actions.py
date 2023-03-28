@@ -1,4 +1,8 @@
+import math
+
 from data import *
+from weather import *
+from datetime import datetime, timedelta
 from telegram import CallbackQuery, Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.constants import ParseMode
 from telegram.ext import CallbackQueryHandler
@@ -10,11 +14,12 @@ class AbstractAction:
         self.bot = bot
         self.action_key = action_key
 
+    def get_city(self, _id: str) -> CityModel:
+        data_loader: DataLoader = self.bot.data_loader
+        return data_loader.get_city_model(_id)
+
     async def handle(self, args: list, update: Update, ctx):
         print(f"Execution code for action '{self.action_key}' isn't implemented!")
-
-    def get_city(self, city_id: str) -> CityModel:
-        return self.bot.data_loader.get_city_model(city_id)
 
 
 class CallbackHandler(CallbackQueryHandler):
@@ -47,10 +52,7 @@ class CallbackHandler(CallbackQueryHandler):
                 print(f"[Callback] Invoked unknown action '{command}'!")
                 await self.bot.get().send_message(query.message.chat_id, '😡 Не тыкайся...')
             else:
-                try:
-                    await action.handle(args, update, ctx)
-                except BadRequest:
-                    print(f"[Callback] Handle error: BadRequest")
+                await action.handle(args, update, ctx)
 
 
 class ActionShowCities(AbstractAction):
@@ -124,7 +126,20 @@ class ActionSelectCity(AbstractAction):
         ])
 
 
-class ActionShowCityInfo(AbstractAction):
+class AbstractCityAction(AbstractAction):
+    def __init__(self, bot, action_key: str):
+        super().__init__(bot, action_key)
+
+    @staticmethod
+    def construct_keyboard(city_id: str) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton('🎲 Вернуться к выбору действия', callback_data=f'#select_city {city_id}')
+            ]
+        ])
+
+
+class ActionShowCityInfo(AbstractCityAction):
     def __init__(self, bot):
         super().__init__(bot, 'show_city_info')
 
@@ -133,7 +148,9 @@ class ActionShowCityInfo(AbstractAction):
             print(f'[Callback] Failed: there are no city_id argument received!')
             return
 
-        city = self.get_city(args[0])
+        city_id = args[0]
+        city = self.get_city(city_id)
+
         query: CallbackQuery = update.callback_query
 
         await query.edit_message_text(
@@ -147,13 +164,72 @@ class ActionShowCityInfo(AbstractAction):
 ○ Население: `{city.population}`
             """,
             parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=ActionShowCityInfo.construct_keyboard(args[0])
+            reply_markup=ActionShowCityInfo.construct_keyboard(city_id)
         )
 
-    @staticmethod
-    def construct_keyboard(city_id: str) -> InlineKeyboardMarkup:
-        return InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton('🎲 Вернуться к выбору действия', callback_data=f'#select_city {city_id}')
-            ]
-        ])
+
+class ActionShowWeather(AbstractCityAction):
+    def __init__(self, bot):
+        super().__init__(bot, 'show_weather')
+
+    def get_weather_data(self, city_id: str) -> CityWeatherData | None:
+        weather_service: WeatherService = self.bot.weather_service
+        return weather_service.get_cached_weather_data(city_id)
+
+    def get_condition(self, _id: int) -> WeatherCondition | None:
+        data_loader: DataLoader = self.bot.data_loader
+        return data_loader.get_weather_condition(_id)
+
+    async def handle(self, args: list, update: Update, ctx):
+        if len(args) < 1:
+            print(f'[Callback] Failed: there are no city_id argument received!')
+            return
+
+        city_id = args[0]
+        city = self.get_city(city_id)
+
+        query: CallbackQuery = update.callback_query
+
+        weather_data = self.get_weather_data(city_id)
+        if weather_data is None:
+            await query.edit_message_text(
+                f"""
+*Информация о текущей погоде*
+
+○ Город: `{city.name}` {city.emoji}
+
+_К сожалению, информация в данный момент отстутствует :(_
+_Это может быть вызвано различными техническими неполадками._
+_Попробуйте повторить запрос позже._
+                """,
+                parse_mode=ParseMode.MARKDOWN_V2,
+                reply_markup=ActionShowWeather.construct_keyboard(city_id)
+            )
+        else:
+            condition: WeatherCondition = self.get_condition(weather_data.condition_code)
+            condition_text: str = condition.get_text(weather_data.is_day)
+            condition_emoji: str = condition.get_emoji(weather_data.is_day)
+
+            time_delta: timedelta = datetime.now() - weather_data.date_time
+            update_time_ago: int = round(time_delta.total_seconds() / 60.0)
+
+            if update_time_ago == 0:
+                update_time_ago = 1
+
+            await query.edit_message_text(
+                f"""
+*Информация о текущей погоде*
+
+*Город:* {city.name} {city.emoji}
+_{condition_text}_ {condition_emoji}
+
+○ Температура: `{round(weather_data.temp_c)}°C` */* `{round(weather_data.temp_f)}°F`
+○ Ощущается как: `{round(weather_data.feelslike_c)}°C` */* `{round(weather_data.feelslike_f)}°F`
+○ Влажность: `{weather_data.humidity}%`
+○ Облачность: `{weather_data.cloud}%`
+
+Последнее обновление: *{update_time_ago} мин\\. назад*\\.
+                """,
+                parse_mode=ParseMode.MARKDOWN_V2,
+                reply_markup=ActionShowWeather.construct_keyboard(city_id)
+            )
