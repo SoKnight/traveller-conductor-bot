@@ -67,5 +67,5 @@ class DataLoader:
     def get_city_model(self, _id: str) -> CityModel:
         return self.city_models[_id] if _id in self.city_models.keys() else None
 
-    def get_weather_condition(self, _id: int) -> WeatherCondition | None:
+    def get_weather_condition(self, _id: int) -> WeatherCondition:
         return self.weather_conditions[_id] if _id in self.weather_conditions.keys() else None

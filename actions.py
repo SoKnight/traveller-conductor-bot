@@ -172,11 +172,11 @@ class ActionShowWeather(AbstractCityAction):
     def __init__(self, bot):
         super().__init__(bot, 'show_weather')
 
-    def get_weather_data(self, city_id: str) -> CityWeatherData | None:
+    def get_weather_data(self, city_id: str) -> CityWeatherData:
         weather_service: WeatherService = self.bot.weather_service
         return weather_service.get_cached_weather_data(city_id)
 
-    def get_condition(self, _id: int) -> WeatherCondition | None:
+    def get_condition(self, _id: int) -> WeatherCondition:
         data_loader: DataLoader = self.bot.data_loader
         return data_loader.get_weather_condition(_id)
 
@@ -196,11 +196,11 @@ class ActionShowWeather(AbstractCityAction):
                 f"""
 *Информация о текущей погоде*
 
-○ Город: `{city.name}` {city.emoji}
+*Город:* {city.name} {city.emoji}
 
-_К сожалению, информация в данный момент отстутствует :(_
-_Это может быть вызвано различными техническими неполадками._
-_Попробуйте повторить запрос позже._
+_К сожалению, информация в данный момент отстутствует :\\(_
+_Это может быть вызвано техническими неполадками\\._
+_Попробуйте повторить запрос позже\\._
                 """,
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=ActionShowWeather.construct_keyboard(city_id)

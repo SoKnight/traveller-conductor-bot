@@ -39,10 +39,10 @@ class WeatherService:
         self.thread = WeatherFetchThread(self)
         self.cache = dict()
 
-    def get_cached_weather_data(self, city_id: str) -> CityWeatherData | None:
+    def get_cached_weather_data(self, city_id: str) -> CityWeatherData:
         return self.cache[city_id] if city_id in self.cache.keys() else None
 
-    def update_weather_data(self, city_id: str, data: CityWeatherData | None):
+    def update_weather_data(self, city_id: str, data):
         self.cache[city_id] = data
 
     def start(self):
@@ -61,7 +61,7 @@ class QueryItem:
 
 class WeatherFetchThread(Thread):
     def __init__(self, service: WeatherService):
-        super().__init__(name="Weather Fetch Thread")
+        super().__init__(name="Weather Fetch Thread", daemon=True)
         self.service = service
         self.query_items = list()
 
@@ -80,7 +80,7 @@ class WeatherFetchThread(Thread):
             self.service.update_weather_data(query_item.city_id, data)
             sleep(5)
 
-    def perform_request(self, query: str) -> CityWeatherData | None:
+    def perform_request(self, query: str):
         url = 'https://api.weatherapi.com/v1/current.json'
 
         params = dict()
