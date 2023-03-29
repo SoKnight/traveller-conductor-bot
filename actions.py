@@ -244,7 +244,7 @@ _Мы обязательно добавим их позже\\._
             )
 
     @staticmethod
-    def construct_custom_keyboard(city_id: str, city: CityModel, photos_messages: tuple[Message, ...]):
+    def construct_custom_keyboard(city_id: str, city: CityModel, photos_messages: tuple):
         source_buttons = list()
         counter = 1
 
