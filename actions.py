@@ -1,12 +1,9 @@
-import math
-
 from data import *
 from weather import *
 from datetime import datetime, timedelta
-from telegram import CallbackQuery, Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import CallbackQuery, Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Message
 from telegram.constants import ParseMode
-from telegram.ext import CallbackQueryHandler
-from telegram.error import BadRequest
+from telegram.ext import CallbackQueryHandler, ExtBot
 
 
 class AbstractAction:
@@ -38,21 +35,48 @@ class CallbackHandler(CallbackQueryHandler):
         await query.answer()
 
         data = query.data
-        if data.startswith("#"):
-            command_line = data[1:]
-            args = command_line.split(' ')
-            command = args.pop(0)
 
-            action = None
+        for line in data.split('\n'):
+            if line.startswith('#'):
+                command_line = line[1:]
+                args = command_line.split(' ')
+                command = args.pop(0)
 
-            if command in self.bot.registered_actions.keys():
-                action = self.bot.registered_actions[command]
+                action = None
 
-            if action is None:
-                print(f"[Callback] Invoked unknown action '{command}'!")
-                await self.bot.get().send_message(query.message.chat_id, '😡 Не тыкайся...')
-            else:
-                await action.handle(args, update, ctx)
+                if command in self.bot.registered_actions.keys():
+                    action = self.bot.registered_actions[command]
+
+                if action is None:
+                    print(f"[Callback] Invoked unknown action '{command}'!")
+                    await self.bot.get().send_message(query.message.chat_id, '😡 Не тыкайся...')
+                else:
+                    await action.handle(args, update, ctx)
+
+
+class ActionDeleteMessages(AbstractAction):
+    def __init__(self, bot):
+        super().__init__(bot, 'delete')
+
+    async def handle(self, args: list, update: Update, ctx):
+        if len(args) < 1:
+            print(f'[Callback] Failed: there are no chat_id argument received!')
+            return
+
+        if len(args) < 2:
+            print(f'[Callback] Failed: there are no message_id argument(s) received!')
+            return
+
+        bot: ExtBot = self.bot.get()
+        chat_id = int(args.pop(0))
+        coroutines = list()
+
+        for message_id in args:
+            message_id = int(message_id)
+            coroutines.append(bot.delete_message(chat_id, message_id))
+
+        for coroutine in coroutines:
+            await coroutine
 
 
 class ActionShowCities(AbstractAction):
@@ -168,6 +192,81 @@ class ActionShowCityInfo(AbstractCityAction):
         )
 
 
+class ActionShowPhotos(AbstractCityAction):
+    def __init__(self, bot):
+        super().__init__(bot, 'show_photos')
+
+    async def handle(self, args: list, update: Update, ctx):
+        if len(args) < 1:
+            print(f'[Callback] Failed: there are no city_id argument received!')
+            return
+
+        city_id = args[0]
+        city = self.get_city(city_id)
+
+        query: CallbackQuery = update.callback_query
+
+        if len(city.photos) == 0:
+            await query.edit_message_text(
+                f"""
+*Фотографии города*
+
+*Город:* {city.name} {city.emoji}
+
+_К сожалению, фотографии пока отсутствуют :\\(_
+_Мы обязательно добавим их позже\\._
+                            """,
+                parse_mode=ParseMode.MARKDOWN_V2,
+                reply_markup=ActionShowPhotos.construct_keyboard(city_id)
+            )
+        else:
+            media = list()
+
+            for photo in city.photos:
+                photo: CityPhoto
+                media.append(InputMediaPhoto(photo.tg_id))
+
+            await query.delete_message()
+
+            sent_messages = await query.message.reply_media_group(media, protect_content=True)
+
+            await query.message.reply_text(
+                f"""
+*Фотографии города*
+
+*Город:* {city.name} {city.emoji}
+
+Вот несколько фото выбранного города 🥺
+Оригинальные источники доступны ниже\\.
+                """,
+                parse_mode=ParseMode.MARKDOWN_V2,
+                reply_markup=ActionShowPhotos.construct_custom_keyboard(city_id, city, sent_messages)
+            )
+
+    @staticmethod
+    def construct_custom_keyboard(city_id: str, city: CityModel, photos_messages: tuple[Message, ...]):
+        source_buttons = list()
+        counter = 1
+
+        for photo in city.photos:
+            photo: CityPhoto
+            source_buttons.append(InlineKeyboardButton(f"Источник #{counter}", url=photo.source))
+            counter += 1
+
+        chat_id = photos_messages[0].chat_id
+        message_ids = ' '.join([str(message.message_id) for message in photos_messages])
+
+        return InlineKeyboardMarkup([
+            source_buttons,
+            [
+                InlineKeyboardButton(
+                    '🎲 Вернуться к выбору действия',
+                    callback_data=f'#delete {chat_id} {message_ids}\n#select_city {city_id}'
+                )
+            ]
+        ])
+
+
 class ActionShowWeather(AbstractCityAction):
     def __init__(self, bot):
         super().__init__(bot, 'show_weather')
@@ -206,6 +305,9 @@ _Попробуйте повторить запрос позже\\._
                 reply_markup=ActionShowWeather.construct_keyboard(city_id)
             )
         else:
+            local_datetime = datetime.utcnow() + timedelta(minutes=city.time_offset)
+            gmt_offset = f'\\+{city.time_offset // 60}' if city.time_offset >= 0 else city.time_offset // 60
+
             condition: WeatherCondition = self.get_condition(weather_data.condition_code)
             condition_text: str = condition.get_text(weather_data.is_day)
             condition_emoji: str = condition.get_emoji(weather_data.is_day)
@@ -223,12 +325,13 @@ _Попробуйте повторить запрос позже\\._
 *Город:* {city.name} {city.emoji}
 _{condition_text}_ {condition_emoji}
 
-○ Температура: `{round(weather_data.temp_c)}°C` */* `{round(weather_data.temp_f)}°F`
-○ Ощущается как: `{round(weather_data.feelslike_c)}°C` */* `{round(weather_data.feelslike_f)}°F`
-○ Влажность: `{weather_data.humidity}%`
-○ Облачность: `{weather_data.cloud}%`
+○ Местное время:  `{local_datetime.strftime('%d.%m.%y %H:%M:%S')}`  `GMT{gmt_offset}`
+○ Температура:  `{round(weather_data.temp_c)}°C / {round(weather_data.temp_f)}°F`
+○ Ощущается как:  `{round(weather_data.feelslike_c)}°C / {round(weather_data.feelslike_f)}°F`
+○ Влажность:  `{weather_data.humidity}%`
+○ Облачность:  `{weather_data.cloud}%`
 
-Последнее обновление: *{update_time_ago} мин\\. назад*\\.
+Последнее обновление: *{update_time_ago} мин\\. назад*
                 """,
                 parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=ActionShowWeather.construct_keyboard(city_id)

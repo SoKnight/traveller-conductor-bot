@@ -72,13 +72,12 @@ class WeatherFetchThread(Thread):
     def run(self) -> None:
         while True:
             self.tick()
-            sleep(5)
 
     def tick(self):
         for query_item in self.query_items:
             data = self.perform_request(query_item.query_string())
             self.service.update_weather_data(query_item.city_id, data)
-            sleep(5)
+            sleep(10)
 
     def perform_request(self, query: str):
         url = 'https://api.weatherapi.com/v1/current.json'

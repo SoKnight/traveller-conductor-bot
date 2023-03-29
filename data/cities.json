@@ -8,7 +8,25 @@
     "lat": 58.0105,
     "lon": 56.2502,
     "area": 803,
-    "population": "1 млн."
+    "population": "1 млн.",
+    "time_offset": 300,
+    "photos": [
+      {
+        "tg_id": "AgACAgIAAxkDAAICgmQkchDN4Wn86toIMElllIwL--wPAAJyxzEbxMYhSSMB5dhde2kYAQADAgADeQADLwQ",
+        "file": "1.jpg",
+        "source": "https://img.geliophoto.com/perm/01_perm.jpg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICg2QkchCjL1D7EAb3rftuUD7nC2RBAAJzxzEbxMYhSXESEeF4gkZwAQADAgADdwADLwQ",
+        "file": "2.jpg",
+        "source": "https://sportishka.com/uploads/posts/2022-04/1650650916_62-sportishka-com-p-rossiya-perm-krasivo-foto-62.jpg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAIChGQkchHjKLmr_nfNr_swYB4tCmhjAAJ0xzEbxMYhSfgOT4P8wKleAQADAgADdwADLwQ",
+        "file": "3.jpg",
+        "source": "https://ic.pics.livejournal.com/zdorovs/16627846/2095861/2095861_original.jpg"
+      }
+    ]
   },
   "moscow": {
     "name": "Москва",
@@ -19,7 +37,25 @@
     "lat": 55.7522,
     "lon": 37.6156,
     "area": 2511,
-    "population": "12 млн."
+    "population": "12 млн.",
+    "time_offset": 180,
+    "photos": [
+      {
+        "tg_id": "AgACAgIAAxkDAAICh2QkdwSchU8uA0uvMsltLw0Hg2oRAAKGxzEbxMYhSbUen54L1oUSAQADAgADeQADLwQ",
+        "file": "1.jpg",
+        "source": "https://img-fotki.yandex.ru/get/6101/113654913.9/0_1206df_5e8f183_XXXL.jpg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICiGQkdwWomgPnWXjqU_aMZ8ZfQ3iEAAKHxzEbxMYhSc-o9sTNFFRkAQADAgADeQADLwQ",
+        "file": "2.jpg",
+        "source": "https://cs6.livemaster.ru/storage/d7/72/65cb7cf95420d7341dc022bf5d02.jpg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICiWQkdwbjENssCRdlVYkP3WeaYoV8AAKIxzEbxMYhSaCGsg1iaov6AQADAgADdwADLwQ",
+        "file": "3.jpg",
+        "source": "https://vsegda-pomnim.com/uploads/posts/2022-03/1647204966_16-vsegda-pomnim-com-p-reka-moskva-foto-17.jpg"
+      }
+    ]
   },
   "kungur": {
     "name": "Кунгур",
@@ -30,7 +66,25 @@
     "lat": 57.4368,
     "lon": 56.9593,
     "area": 68.7,
-    "population": "64,3 тыс."
+    "population": "64,3 тыс.",
+    "time_offset": 300,
+    "photos": [
+      {
+        "tg_id": "AgACAgIAAxkDAAICjGQkdxHEQNcz-JYAAU4_KmJuxSFXKQACiccxG8TGIUlTJfVN6q3X7AEAAwIAA3kAAy8E",
+        "file": "1.jpg",
+        "source": "https://sun9-65.userapi.com/FHxoo5Tu9K3_8lU5QcGW4H8Ee8zz8bb0ZW9-uA/XqgJlp0dT4g.jpg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICjWQkdxJjpCcBCZtu0incCqgaquVkAAKKxzEbxMYhScVgBuh0aRG9AQADAgADeQADLwQ",
+        "file": "2.jpg",
+        "source": "https://nashural.ru/assets/uploads/kungur-panorama.jpg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICjmQkdxMPLPROzOKSxaQjbbyfnLQdAAKLxzEbxMYhSdMj08YAAZK9hAEAAwIAA3kAAy8E",
+        "file": "3.jpg",
+        "source": "https://sportishka.com/uploads/posts/2022-04/thumbs/1650485083_26-sportishka-com-p-perm-dostoprimechatelnosti-goroda-krasivo-27.jpg"
+      }
+    ]
   },
   "birma": {
     "name": "Бырма",
@@ -41,7 +95,25 @@
     "lat": 57.2446,
     "lon": 56.2996,
     "area": 2.2,
-    "population": "700 чел."
+    "population": "700 чел.",
+    "time_offset": 300,
+    "photos": [
+      {
+        "tg_id": "AgACAgIAAxkDAAICkWQkdxnNI0QC271Dp6AvTo53WLvJAAKMxzEbxMYhSTZSP_kdq-cnAQADAgADeQADLwQ",
+        "file": "1.jpg",
+        "source": "https://i.mycdn.me/i?r=AzEPZsRbOZEKgBhR0XGMT1Rk8pUcn25OuDoD8Ofx-yV0JqaKTM5SRkZCeTgDn6uOyic"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICkmQkdxk6YyG8FGWsH8_ZUwNzbra0AAKNxzEbxMYhSY3pqPYMq-Z5AQADAgADeAADLwQ",
+        "file": "2.jpg",
+        "source": "http://nytva.permarea.ru/upload/pages/11437/image_1553793483.jpg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICk2QkdxsT7-MQ1QzHkdIspE7afZ8hAAKOxzEbxMYhSSeJYy922KsVAQADAgADeQADLwQ",
+        "file": "3.jpg",
+        "source": "https://sun6-23.userapi.com/s/v1/ig2/ncQ7gdTgJ-1GLmb3bwZV78wHfNQBqxI3a0VQpI9H9QnZNa9RshTYFBrtBhBYPbXNJ5PBQv8Y6laO-BJF47WsbU0c.jpg?size=1117x1117&quality=96&crop=281,1,1117,1117&ava=1"
+      }
+    ]
   },
   "london": {
     "name": "Лондон",
@@ -52,7 +124,25 @@
     "lat": 51.5085,
     "lon": -0.12574,
     "area": 1572,
-    "population": "9 млн."
+    "population": "9 млн.",
+    "time_offset": 60,
+    "photos": [
+      {
+        "tg_id": "AgACAgIAAxkDAAIClmQkdyBF8WCniIPZrzpZuOhydjpvAAKPxzEbxMYhSZOi3LE6wj2VAQADAgADeQADLwQ",
+        "file": "1.jpg",
+        "source": "https://friends.bigasia.ru/upload/iblock/839/83964c7c06c2e761d12dff237e3cd520.jpg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICl2QkdyH3p8Tb5uYNXMC6y9OIRdIQAAKQxzEbxMYhSU7Qd6Upww44AQADAgADeQADLwQ",
+        "file": "2.jpg",
+        "source": "https://static.tildacdn.com/tild6264-6439-4432-b962-396230396165/198.jpg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICmGQkdyM787lbSq1bU3zZRE9MG72TAAKRxzEbxMYhSSFTtQeVIrr9AQADAgADdwADLwQ",
+        "file": "3.jpg",
+        "source": "https://traveltimes.ru/wp-content/uploads/2021/09/78-2048x1372.jpg"
+      }
+    ]
   },
   "paris": {
     "name": "Париж",
@@ -63,6 +153,24 @@
     "lat": 48.8534,
     "lon": 2.3488,
     "area": 105,
-    "population": "2,2 млн."
+    "population": "2,2 млн.",
+    "time_offset": 120,
+    "photos": [
+      {
+        "tg_id": "AgACAgIAAxkDAAICm2Qkdyhmzk3H4gFKUw9sKV0bl-uBAAKSxzEbxMYhSbmtYDyv1yjcAQADAgADdwADLwQ",
+        "file": "1.jpg",
+        "source": "https://static.riafan.ru/upload/images/2022/9/25/1003761_full.jpeg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICnGQkdyvBgLyBK-h-vYjScAABIGd6nAACk8cxG8TGIUnkBIJ1Hf50qgEAAwIAA3cAAy8E",
+        "file": "2.jpg",
+        "source": "https://i.artfile.ru/2048x1536_337426_[www.ArtFile.ru].jpg"
+      },
+      {
+        "tg_id": "AgACAgIAAxkDAAICnWQkdzVIj8xJYzkxG93Sv5pxgmc0AAKVxzEbxMYhSUxUvAUidCV_AQADAgADdwADLwQ",
+        "file": "3.jpg",
+        "source": "https://www.tripsavvy.com/thmb/GKyG-p3qSCWFgl9d-YBF6sLRIrY%3D/5760x3840/filters:fill%28auto%2C1%29/GettyImages-559699279-58f4f3cb5f9b582c4dfb1b29.jpg"
+      }
+    ]
   }
 }

@@ -2,18 +2,31 @@ from telegram import InlineKeyboardButton
 import json
 
 
+class CityPhoto:
+    def __init__(self, data: dict):
+        self.tg_id = data['tg_id']
+        self.file = data['file']
+        self.source = data['source']
+
+
 class CityModel:
     def __init__(self, city_id: str, data: dict):
-        self.city_id = city_id
-        self.name = data['name']
-        self.country = data['country']
-        self.emoji = data['emoji']
-        self.latitude = data['latitude']
-        self.longitude = data['longitude']
-        self.raw_lat = data['lat']
-        self.raw_lon = data['lon']
-        self.area = data['area']
-        self.population = data['population']
+        self.city_id: str = city_id
+        self.name: str = data['name']
+        self.country: str = data['country']
+        self.emoji: str = data['emoji']
+        self.latitude: str = data['latitude']
+        self.longitude: str = data['longitude']
+        self.raw_lat: float = data['lat']
+        self.raw_lon: float = data['lon']
+        self.area: float = data['area']
+        self.population: str = data['population']
+        self.time_offset: int = data['time_offset']
+        self.photos: list = list()
+
+        if 'photos' in data.keys():
+            for item in data['photos']:
+                self.photos.append(CityPhoto(item))
 
     def as_inline_button(self):
         return InlineKeyboardButton(f'{self.emoji} {self.name}', callback_data=f'#select_city {self.city_id}')

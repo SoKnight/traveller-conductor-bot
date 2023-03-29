@@ -58,9 +58,11 @@ class Bot:
         self.register_command(CommandHelp(self))
 
         print('Registering actions...')
+        self.register_action(ActionDeleteMessages(self))
         self.register_action(ActionShowCities(self))
         self.register_action(ActionSelectCity(self))
         self.register_action(ActionShowCityInfo(self))
+        self.register_action(ActionShowPhotos(self))
         self.register_action(ActionShowWeather(self))
 
         print('Registering handlers...')
