@@ -1,9 +1,11 @@
-from data import *
-from weather import *
-from datetime import datetime, timedelta
-from telegram import CallbackQuery, Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Message
+from datetime import timedelta
+
+from telegram import CallbackQuery, Update, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.constants import ParseMode
 from telegram.ext import CallbackQueryHandler, ExtBot
+
+from data import *
+from weather import *
 
 
 class AbstractAction:

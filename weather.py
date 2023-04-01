@@ -1,9 +1,10 @@
 from datetime import datetime
-from data import DataLoader, CityModel
-from time import sleep
 from threading import Thread
+from time import sleep
 
-import requests
+from requests import get, ConnectionError
+
+from data import DataLoader, CityModel
 
 
 class CityWeatherData:
@@ -71,7 +72,11 @@ class WeatherFetchThread(Thread):
 
     def run(self) -> None:
         while True:
-            self.tick()
+            try:
+                self.tick()
+            except ConnectionError:
+                print("[Weather Service] Connection error :(")
+            sleep(10)
 
     def tick(self):
         for query_item in self.query_items:
@@ -89,7 +94,7 @@ class WeatherFetchThread(Thread):
         headers = dict()
         headers['User-Agent'] = 'Traveller Conductor Weather Service'
 
-        response = requests.get(url, params=params, headers=headers)
+        response = get(url, params=params, headers=headers)
         if response.status_code != 200:
             print(f"Status code {response.status_code} received when I tried to query weather status for '{query}' :(")
             return None

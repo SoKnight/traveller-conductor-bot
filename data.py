@@ -1,5 +1,7 @@
-from telegram import InlineKeyboardButton
 import json
+import random
+
+from telegram import InlineKeyboardButton
 
 
 class CityPhoto:
@@ -52,10 +54,12 @@ class DataLoader:
     def __init__(self):
         self.city_models = dict()
         self.weather_conditions = dict()
+        self.user_photo_reactions = list()
 
     def load(self):
         self.parse_city_models()
         self.parse_weather_conditions()
+        self.read_user_photo_reactions()
 
     def parse_city_models(self):
         file = open('data/cities.json', 'r', encoding='UTF-8')
@@ -77,8 +81,22 @@ class DataLoader:
             condition = WeatherCondition(item)
             self.weather_conditions[condition.code] = condition
 
+    def read_user_photo_reactions(self):
+        file = open('data/phrases.txt', 'r', encoding='UTF-8')
+
+        for line in file.readlines():
+            line = line.rstrip('\n')
+            if len(line) > 1:
+                self.user_photo_reactions.append(line)
+
+        file.close()
+
     def get_city_model(self, _id: str) -> CityModel:
         return self.city_models[_id] if _id in self.city_models.keys() else None
 
     def get_weather_condition(self, _id: int) -> WeatherCondition:
         return self.weather_conditions[_id] if _id in self.weather_conditions.keys() else None
+
+    def get_random_photo_reaction(self) -> str:
+        index = random.randint(0, len(self.user_photo_reactions) - 1)
+        return self.user_photo_reactions[index]

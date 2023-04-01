@@ -1,9 +1,12 @@
+import yaml
+
+from telegram.ext import Application, ApplicationBuilder, MessageHandler, CallbackContext
+from telegram.ext.filters import *
+
 from actions import *
 from commands import *
 from data import *
 from weather import WeatherService
-from telegram.ext import Application, ApplicationBuilder, ExtBot
-import yaml
 
 
 class Preferences:
@@ -76,6 +79,11 @@ class Bot:
         # callback handler
         CallbackHandler(self).register()
 
+        # message handler
+        app: Application = self.app
+        app.add_handler(MessageHandler(filters=PHOTO | ATTACHMENT, callback=self.handle_user_photo_message))
+        app.add_error_handler(callback=Bot.handle_error)
+
     def register_command(self, command: AbstractCommand):
         self.registered_commands[command.command] = command
 
@@ -84,8 +92,39 @@ class Bot:
 
     def start(self):
         print('Running LongPoll...')
+        print('')
+
         CallbackHandler(self).register()
         self.app.run_polling()
+
+    async def handle_user_photo_message(self, update: Update, ctx):
+        has_photo: bool = False
+
+        if update.message.document is not None:
+            mime_type: str = update.message.document.mime_type
+            if mime_type.startswith("image/"):
+                has_photo = True
+
+        if update.message.photo is not None and len(update.message.photo) != 0:
+            has_photo = True
+
+        if not has_photo:
+            return
+
+        data_loader: DataLoader = self.data_loader
+        await update.message.reply_text(
+            data_loader.get_random_photo_reaction(),
+            reply_to_message_id=update.message.message_id
+        )
+
+    @staticmethod
+    async def handle_error(update, ctx: CallbackContext):
+        error: Exception = ctx.error
+        if error is None:
+            return
+
+        print("> An error was occurred during the mainloop processing:")
+        print(f"  {error}")
 
 
 print("""
