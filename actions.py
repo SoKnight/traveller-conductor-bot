@@ -230,7 +230,7 @@ _Мы обязательно добавим их позже\\._
 
             await query.delete_message()
 
-            sent_messages = await query.message.reply_media_group(media, protect_content=True)
+            sent_messages = await query.message.reply_media_group(media, protect_content=False)
 
             await query.message.reply_text(
                 f"""
