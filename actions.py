@@ -8,6 +8,8 @@ from data import *
 from weather import *
 
 
+# Класс, абстрактно описывающий обработчик callback-действия с клавиатурой бота
+# Обобщает метод обработки события и предоставляет доступ к объекту класса Bot
 class AbstractAction:
     def __init__(self, bot, action_key: str):
         self.bot = bot
@@ -21,6 +23,9 @@ class AbstractAction:
         print(f"Execution code for action '{self.action_key}' isn't implemented!")
 
 
+# Обработчик callback-событий, являющийся также диспетчером обработчиков действий
+# При получении нового события находит подходящий обработчик действия и передаёт
+# обработку события ему, иначе сообщает пользователю, что такого действия нет
 class CallbackHandler(CallbackQueryHandler):
     def __init__(self, bot):
         super().__init__(self.handle_callback)
@@ -56,6 +61,8 @@ class CallbackHandler(CallbackQueryHandler):
                     await action.handle(args, update, ctx)
 
 
+# Класс, описывающий обработку действия по удалению сообщений
+# Принимает внутри события идентификаторы сообщений и параллельно удаляет их
 class ActionDeleteMessages(AbstractAction):
     def __init__(self, bot):
         super().__init__(bot, 'delete')
@@ -81,6 +88,8 @@ class ActionDeleteMessages(AbstractAction):
             await coroutine
 
 
+# Класс, описывающий обработку действия по отображению списка городов
+# Ничего не требует от события, просто выводит статичную клавиатуру с городами
 class ActionShowCities(AbstractAction):
     def __init__(self, bot):
         super().__init__(bot, 'show_cities')
@@ -113,6 +122,9 @@ class ActionShowCities(AbstractAction):
             )
 
 
+# Класс, описывающий обработку действия по выбору конкретного города
+# Принимает внутри события ключ города и затем отображает клавиатуру
+# с возможными действиями для этого города
 class ActionSelectCity(AbstractAction):
     def __init__(self, bot):
         super().__init__(bot, 'select_city')
@@ -152,6 +164,8 @@ class ActionSelectCity(AbstractAction):
         ])
 
 
+# Класс, абстрактно описывающий то же действие, но применимое к городу
+# Содержит готовый метод для отправки клавиатуры с действием возврата
 class AbstractCityAction(AbstractAction):
     def __init__(self, bot, action_key: str):
         super().__init__(bot, action_key)
@@ -165,6 +179,8 @@ class AbstractCityAction(AbstractAction):
         ])
 
 
+# Класс, описывающий обработку действия по отображению информации о городе
+# Аналогично выбору города получает его ключ, запрашивает информацию и выводит её
 class ActionShowCityInfo(AbstractCityAction):
     def __init__(self, bot):
         super().__init__(bot, 'show_city_info')
@@ -194,6 +210,9 @@ class ActionShowCityInfo(AbstractCityAction):
         )
 
 
+# Класс, описывающий обработку действия по отображению фото города
+# Принимает внутри события ключ города, запрашивает идентификаторы
+# загруженных на серверы Telegram фотографий и отправляет их в сообщении
 class ActionShowPhotos(AbstractCityAction):
     def __init__(self, bot):
         super().__init__(bot, 'show_photos')
@@ -269,6 +288,9 @@ _Мы обязательно добавим их позже\\._
         ])
 
 
+# Класс, описывающий обработку действия по отображению актуальной погоды
+# Принимает внутри события ключ города, запрашивает сохранённую в памяти
+# информацию о погоде и выводит её в сообщении
 class ActionShowWeather(AbstractCityAction):
     def __init__(self, bot):
         super().__init__(bot, 'show_weather')

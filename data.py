@@ -4,6 +4,7 @@ import random
 from telegram import InlineKeyboardButton
 
 
+# Модель фото города, описывающая локально хранимые JSON структуры
 class CityPhoto:
     def __init__(self, data: dict):
         self.tg_id = data['tg_id']
@@ -11,6 +12,7 @@ class CityPhoto:
         self.source = data['source']
 
 
+# Модель города, описывающая локально хранимые JSON структуры
 class CityModel:
     def __init__(self, city_id: str, data: dict):
         self.city_id: str = city_id
@@ -34,6 +36,7 @@ class CityModel:
         return InlineKeyboardButton(f'{self.emoji} {self.name}', callback_data=f'#select_city {self.city_id}')
 
 
+# Модель состояния погоды, описывающая локально хранимые JSON структуры
 class WeatherCondition:
     def __init__(self, data: dict):
         self.code = data['code']
@@ -50,6 +53,8 @@ class WeatherCondition:
         return self.day_emoji if is_day else self.night_emoji
 
 
+# Класс, реализующий инструмент, необходимый для загрузки данных
+# из локального хранилища в память в виде объектов моделей
 class DataLoader:
     def __init__(self):
         self.city_models = dict()

@@ -7,6 +7,8 @@ from requests import get, ConnectionError
 from data import DataLoader, CityModel
 
 
+# Модель данных, описывающая сохранённую текущую погоду в городе
+# Используется для хранения погоды в памяти и обновляется в фоне
 class CityWeatherData:
     date_time: datetime
     temp_c: float
@@ -34,6 +36,8 @@ class CityWeatherData:
         return self
 
 
+# Класс, реализующий сервис погоды, который контролирует
+# сохранение данных в памяти и их фоновое обновление
 class WeatherService:
     def __init__(self, bot):
         self.bot = bot
@@ -50,6 +54,8 @@ class WeatherService:
         self.thread.start()
 
 
+# Облегчённая модель города, содержащая только географические координаты
+# города, необходимые для точных запросов погоды от WeatherAPI
 class QueryItem:
     def __init__(self, city_id: str, city: CityModel):
         self.city_id = city_id
@@ -60,6 +66,9 @@ class QueryItem:
         return f'{self.lat},{self.lon}'
 
 
+# Реализация потока, выполняющего функцию обновления информации о погоде
+# в фоновом режиме, работая со списком моделей QueryItems, получая
+# информацию о погоде в виде CityWeatherData и сохраняя её в памяти
 class WeatherFetchThread(Thread):
     def __init__(self, service: WeatherService):
         super().__init__(name="Weather Fetch Thread", daemon=True)

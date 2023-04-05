@@ -2,6 +2,8 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler
 
 
+# Класс, абстрактно описывающий исполнитель команды бота
+# Обобщает метод выполнения команды и предоставляет доступ к объекту класса Bot
 class AbstractCommand(CommandHandler):
     def __init__(self, bot, command: str):
         super().__init__(command, self.execute)
@@ -15,6 +17,8 @@ class AbstractCommand(CommandHandler):
         print(f"Execution code for command '{self.command}' isn't implemented!")
 
 
+# Класс, описывающий исполнитель команды /start
+# Выводит пользователю приветствие и статичную клавиатуру для быстрого действия
 class CommandStart(AbstractCommand):
     def __init__(self, bot):
         super().__init__(bot, 'start')
@@ -29,6 +33,8 @@ class CommandStart(AbstractCommand):
         )
 
 
+# Класс, описывающий исполнитель команды /bye
+# Прощается с пользователем в сообщении
 class CommandBye(AbstractCommand):
     def __init__(self, bot):
         super().__init__(bot, 'bye')
@@ -40,6 +46,9 @@ class CommandBye(AbstractCommand):
         )
 
 
+# Класс, описывающий исполнитель команды /help
+# Выводит пользователю список городов, ссылаясь на реализацию этого
+# функционала в аналогичном callback-действии
 class CommandHelp(AbstractCommand):
     def __init__(self, bot):
         super().__init__(bot, 'help')

@@ -9,17 +9,23 @@ from data import *
 from weather import WeatherService
 
 
+# Класс, описывающий структуру настроек в файле 'preferences.yml'
+# Содержит атрибуты телеграм токена и API-ключа для weatherapi.com
 class Preferences:
     def __init__(self, telegram_bot_token: str, weather_api_key: str):
         self.telegram_bot_token: str = telegram_bot_token
         self.weather_api_key: str = weather_api_key
 
+    # При помощи данного метода реальные значения из файла
+    # загружаются в атрибуты объекта посредством инструментария PyYAML
     @staticmethod
     def load():
         file = open('preferences.yml', 'r', encoding='UTF-8')
         return yaml.load(file, yaml.Loader)
 
 
+# Главный класс всей программы, реализующий инициализацию всего
+# функционала бота и различных дополнительных сервисов
 class Bot:
     def __init__(self):
         self.prefs = None
@@ -38,6 +44,8 @@ class Bot:
     def get(self) -> ExtBot:
         return self.app.bot
 
+    # Данный метод вызывается после создания объекта класса
+    # и производит все действия, относящиеся к инициализации
     def load(self):
         print('Loading preferences...')
         self.prefs: Preferences = Preferences.load()
@@ -71,6 +79,8 @@ class Bot:
         print('Registering handlers...')
         self.register_handlers()
 
+    # Вспомогательный метод для регистрации всех обработчиков,
+    # ранее добавленных в списки регистрируемых
     def register_handlers(self):
         # command handlers
         for command in self.registered_commands.values():
@@ -90,6 +100,9 @@ class Bot:
     def register_action(self, action: AbstractAction):
         self.registered_actions[action.action_key] = action
 
+    # Данный метод необходим для запуска основной петли,
+    # блокирующей завершение программы и необходимой
+    # для постоянного получения новых событий от Telegram API
     def start(self):
         print('Running LongPoll...')
         print('')
@@ -97,6 +110,8 @@ class Bot:
         CallbackHandler(self).register()
         self.app.run_polling()
 
+    # Метод обработки события отправки фото пользователем,
+    # необходимый для подготовки и отправки реакции от бота
     async def handle_user_photo_message(self, update: Update, ctx):
         has_photo: bool = False
 
@@ -117,6 +132,7 @@ class Bot:
             reply_to_message_id=update.message.message_id
         )
 
+    # Заглушка для обработки различных ошибок в python-telegram-bot
     @staticmethod
     async def handle_error(update, ctx: CallbackContext):
         error: Exception = ctx.error
@@ -126,6 +142,8 @@ class Bot:
         print("> An error was occurred during the mainloop processing:")
         print(f"  {error}")
 
+
+# Вывод сплэша при запуске, инициализация бота и его запуск
 
 print("""
 -------------------------
