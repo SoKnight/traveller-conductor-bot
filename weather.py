@@ -79,6 +79,8 @@ class WeatherFetchThread(Thread):
         for city_model in data_loader.city_models.items():
             self.query_items.append(QueryItem(city_model[0], city_model[1]))
 
+    # Циклический вызов #tick()
+    # Интервал необходим для соблюдения ограничения частоты запросов к WeatherAPI
     def run(self) -> None:
         while True:
             try:
@@ -87,12 +89,14 @@ class WeatherFetchThread(Thread):
                 print("[Weather Service] Connection error :(")
             sleep(10)
 
+    # Вызов #perform_request(str) и обновление данных в памяти
     def tick(self):
         for query_item in self.query_items:
             data = self.perform_request(query_item.query_string())
             self.service.update_weather_data(query_item.city_id, data)
             sleep(10)
 
+    # Выполнение HTTP запроса к WeatherAPI с ключом 'q' (query)
     def perform_request(self, query: str):
         url = 'https://api.weatherapi.com/v1/current.json'
 

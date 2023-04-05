@@ -106,6 +106,8 @@ class ActionShowCities(AbstractAction):
         query = update.callback_query
         await self.show_cities(query.message.message_id, query.message.chat_id, query.inline_message_id)
 
+    # Поскольку этот метод также используется исполнителем команды /help,
+    # он отправляет список городов в зависимости от контекста сообщения
     async def show_cities(self, message_id, chat_id, inline_message_id):
         if message_id is None and inline_message_id is None:
             await self.bot.get().send_message(
